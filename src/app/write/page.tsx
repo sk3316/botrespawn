@@ -1,15 +1,13 @@
-/**
- * Write / edit page — TipTap rich-text editor for blogs and game reviews.
- * Route: /write
- * Client component: saves to posts (+ reviews row when post_type is 'review').
- */
 'use client'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { useState } from 'react'
+import ImageExtension from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Youtube from '@tiptap/extension-youtube'
 
 export default function WritePage() {
   const router = useRouter()
@@ -17,8 +15,12 @@ export default function WritePage() {
   const [title, setTitle] = useState('')
   const [postType, setPostType] = useState<'blog' | 'review'>('blog')
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [videoUrl, setVideoUrl] = useState('')
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
 
-  // Review-specific fields
+  // Review fields
   const [gameName, setGameName] = useState('')
   const [score, setScore] = useState<number>(8)
   const [platform, setPlatform] = useState('')
@@ -26,9 +28,16 @@ export default function WritePage() {
   const [cons, setCons] = useState('')
   const [verdict, setVerdict] = useState('')
 
-  // TipTap editor instance — StarterKit provides headings, lists, bold, etc.
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [
+      StarterKit,
+      ImageExtension,
+      Link.configure({ openOnClick: false }),
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+      }),
+    ],
     content: '<p>Start writing...</p>',
     editorProps: {
       attributes: {
@@ -37,10 +46,55 @@ export default function WritePage() {
     },
   })
 
-  /**
-   * Saves post to Supabase. Creates slug from title + timestamp.
-   * For reviews, also inserts into reviews table linked by post_id.
-   */
+  async function uploadFile(file: File): Promise<string | null> {
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+      return data.url ?? null
+    } catch {
+      alert('Upload failed. Try again.')
+      return null
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const url = await uploadFile(file)
+    if (url) editor?.chain().focus().setImage({ src: url }).run()
+  }
+
+  async function handleVideoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const url = await uploadFile(file)
+    if (url) {
+      editor?.chain().focus().insertContent(
+        `<video controls style="width:100%;border-radius:8px;margin:12px 0" src="${url}"></video><p></p>`
+      ).run()
+    }
+  }
+
+  function handleVideoEmbed() {
+    if (!videoUrl.trim()) return
+    const ytMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
+    if (ytMatch) {
+      editor?.commands.setYoutubeVideo({
+        src: videoUrl,
+        width: 640,
+        height: 360,
+      })
+      setVideoUrl('')
+      return
+    }
+    alert('Currently only YouTube URLs are supported for embedding.')
+  }
+
   async function handleSave(status: 'draft' | 'published') {
     if (!title.trim() || !editor) return
     if (postType === 'review' && !gameName.trim()) {
@@ -54,7 +108,6 @@ export default function WritePage() {
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now()
 
-    // Insert main post row (content stored as TipTap JSON)
     const { data: post, error } = await supabase.from('posts').insert({
       author_id: user.id,
       title,
@@ -72,7 +125,6 @@ export default function WritePage() {
       return
     }
 
-    // If review, save review details too
     if (postType === 'review') {
       const { error: reviewError } = await supabase.from('reviews').insert({
         post_id: post.id,
@@ -132,7 +184,6 @@ export default function WritePage() {
       {postType === 'review' && (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 flex flex-col gap-4">
           <h3 className="text-white font-bold text-sm tracking-widest uppercase">⭐ Review Details</h3>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Game Name *</label>
@@ -147,7 +198,6 @@ export default function WritePage() {
                 className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
             </div>
           </div>
-
           <div>
             <label className="text-xs text-gray-500 mb-1 block">Score: <span className="text-green-400 font-bold">{score}/10</span></label>
             <input type="range" min="0" max="10" step="0.5" value={score}
@@ -157,26 +207,22 @@ export default function WritePage() {
               <span>0</span><span>5</span><span>10</span>
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Pros (one per line)</label>
               <textarea value={pros} onChange={(e) => setPros(e.target.value)}
-                placeholder={"Great story\nSmooth gameplay"}
-                rows={3}
+                placeholder={"Great story\nSmooth gameplay"} rows={3}
                 className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none" />
             </div>
             <div>
               <label className="text-xs text-gray-500 mb-1 block">Cons (one per line)</label>
               <textarea value={cons} onChange={(e) => setCons(e.target.value)}
-                placeholder={"Too long\nRepetitive missions"}
-                rows={3}
+                placeholder={"Too long\nRepetitive missions"} rows={3}
                 className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none" />
             </div>
           </div>
-
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Verdict (one line summary)</label>
+            <label className="text-xs text-gray-500 mb-1 block">Verdict</label>
             <input type="text" value={verdict} onChange={(e) => setVerdict(e.target.value)}
               placeholder="e.g. A must-play for any RPG fan"
               className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
@@ -202,6 +248,47 @@ export default function WritePage() {
             {btn.label}
           </button>
         ))}
+
+        {/* Divider */}
+        <div className="w-px bg-gray-700 mx-1" />
+
+        {/* Image upload */}
+        <button
+          onClick={() => imageInputRef.current?.click()}
+          disabled={uploading}
+          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+        >
+          {uploading ? '⏳' : '🖼️ Image'}
+        </button>
+        <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+
+        {/* Video upload */}
+        <button
+          onClick={() => videoInputRef.current?.click()}
+          disabled={uploading}
+          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+        >
+          {uploading ? '⏳' : '🎬 Video'}
+        </button>
+        <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
+      </div>
+
+      {/* YouTube/Twitch embed */}
+      <div className="flex gap-2 mb-3">
+        <input
+          type="text"
+          placeholder="Paste YouTube or Twitch URL to embed..."
+          value={videoUrl}
+          onChange={(e) => setVideoUrl(e.target.value)}
+          className="flex-1 bg-gray-900 text-white border border-gray-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-green-500"
+        />
+        <button
+          onClick={handleVideoEmbed}
+          disabled={!videoUrl.trim()}
+          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+        >
+          Embed ↗
+        </button>
       </div>
 
       {/* Editor */}
