@@ -1,3 +1,8 @@
+/**
+ * Single blog post — full article view by URL slug.
+ * Route: /blog/[slug]
+ * Renders TipTap JSON from posts.content as HTML via tiptapJsonToHtml().
+ */
 import { createClient } from '@/lib/supabase/server'
 import { tiptapJsonToHtml, type TiptapDocument } from '@/lib/tiptap-html'
 import { notFound } from 'next/navigation'
@@ -47,6 +52,7 @@ export default async function BlogPostPage({
         </div>
       </div>
 
+      {/* Article body: TipTap JSON converted to HTML */}
       <div
         className="prose prose-invert max-w-none prose-headings:font-black prose-a:text-green-400"
         dangerouslySetInnerHTML={{

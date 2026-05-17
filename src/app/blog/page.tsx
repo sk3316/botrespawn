@@ -1,3 +1,8 @@
+/**
+ * Blog index — public list of published blog posts (not reviews).
+ * Route: /blog
+ * Joins author username from users table via posts_author_id_fkey.
+ */
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 

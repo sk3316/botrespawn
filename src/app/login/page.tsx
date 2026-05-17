@@ -1,3 +1,8 @@
+/**
+ * Login page — Google OAuth sign-in.
+ * Route: /login
+ * Client component: triggers Supabase OAuth; callback handled at /auth/callback.
+ */
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
@@ -5,6 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 export default function LoginPage() {
   const supabase = createClient()
 
+  /** Starts Google OAuth; user returns to /auth/callback with a code */
   async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -49,6 +55,7 @@ export default function LoginPage() {
   )
 }
 
+/** Inline SVG for the Google sign-in button */
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48">

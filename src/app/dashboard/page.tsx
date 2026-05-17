@@ -1,3 +1,8 @@
+/**
+ * User dashboard — lists all posts (drafts + published) for the signed-in author.
+ * Route: /dashboard
+ * Protected: redirects to /login if not authenticated.
+ */
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -7,6 +12,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Fetch only this user's posts, newest first
   const { data: posts } = await supabase
     .from('posts')
     .select('*')

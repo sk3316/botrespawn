@@ -1,9 +1,14 @@
+/**
+ * Home page (landing) — marketing hero, feature cards, and sign-up CTA.
+ * Route: /
+ * Static page; no database calls.
+ */
 import Link from 'next/link'
 
 export default function HomePage() {
   return (
     <main>
-      {/* Hero */}
+      {/* Hero: headline and primary navigation to login / reviews */}
       <section className="border-b border-gray-800 px-6 py-24 text-center">
         <div className="max-w-3xl mx-auto">
           <div className="inline-block bg-green-500/10 border border-green-500/30 text-green-400 text-xs font-bold px-4 py-1.5 rounded-full mb-6 tracking-widest">
@@ -30,7 +35,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Feature grid — three value props for the product */}
       <section className="px-6 py-20 max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
@@ -59,7 +64,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Bottom CTA — drives users to /login */}
       <section className="border-t border-gray-800 px-6 py-20 text-center">
         <h2 className="text-3xl font-black text-white mb-4">
           Ready to <span className="text-green-400">Respawn?</span>

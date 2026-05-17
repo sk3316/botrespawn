@@ -1,5 +1,13 @@
+/**
+ * Converts TipTap/ProseMirror JSON (stored in posts.content) to HTML for display.
+ * Used on the blog post detail page where we render with dangerouslySetInnerHTML.
+ * Supports: paragraphs, headings, lists, blockquotes, horizontal rules, bold, italic.
+ */
+
+/** Inline formatting mark (bold, italic, etc.) on a text node. */
 type TiptapMark = { type: string }
 
+/** A node in the TipTap document tree (block or inline). */
 export type TiptapNode = {
   type: string
   attrs?: { level?: number }
@@ -8,11 +16,16 @@ export type TiptapNode = {
   marks?: TiptapMark[]
 }
 
+/** Root document shape saved by the write editor via editor.getJSON(). */
 export type TiptapDocument = {
   type?: string
   content?: TiptapNode[]
 }
 
+/**
+ * Maps a full TipTap document to an HTML string.
+ * Returns empty string if content is missing or invalid.
+ */
 export function tiptapJsonToHtml(json: TiptapDocument | null | undefined): string {
   if (!json?.content) return ''
 
@@ -44,6 +57,7 @@ export function tiptapJsonToHtml(json: TiptapDocument | null | undefined): strin
     .join('')
 }
 
+/** Extracts plain text from a node and wraps bold/italic marks in HTML tags. */
 function nodeText(node: TiptapNode | undefined): string {
   if (!node?.content) return ''
   return node.content

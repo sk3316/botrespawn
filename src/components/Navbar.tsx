@@ -1,3 +1,7 @@
+/**
+ * Site navigation bar — shown on every page via layout.tsx.
+ * Client component: reads auth state and toggles Sign in vs Write / Sign out.
+ */
 'use client'
 
 import Link from 'next/link'
@@ -6,9 +10,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { User } from '@supabase/supabase-js'
 
 export default function Navbar() {
+  // Single client instance per mount (avoids useEffect dependency warnings)
   const supabase = useMemo(() => createClient(), [])
   const [user, setUser] = useState<User | null>(null)
 
+  // Load current user and subscribe to login/logout changes
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
 
@@ -21,6 +27,7 @@ export default function Navbar() {
     return () => subscription.unsubscribe()
   }, [supabase])
 
+  /** Clears Supabase session and sends user to the home page */
   async function signOut() {
     await supabase.auth.signOut()
     window.location.href = '/'

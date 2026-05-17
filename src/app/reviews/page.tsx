@@ -1,3 +1,8 @@
+/**
+ * Reviews index — public list of published game reviews.
+ * Route: /reviews
+ * Joins posts + reviews table (score, game_name, platform, verdict) + author.
+ */
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 
@@ -25,6 +30,7 @@ export default async function ReviewsPage() {
       {posts && posts.length > 0 ? (
         <div className="flex flex-col gap-6">
           {posts.map((post) => {
+            // reviews is a one-to-one relation; Supabase returns it as an array
             const review = post.reviews?.[0]
             return (
               <Link

@@ -1,3 +1,8 @@
+/**
+ * Write / edit page — TipTap rich-text editor for blogs and game reviews.
+ * Route: /write
+ * Client component: saves to posts (+ reviews row when post_type is 'review').
+ */
 'use client'
 
 import { useEditor, EditorContent } from '@tiptap/react'
@@ -21,6 +26,7 @@ export default function WritePage() {
   const [cons, setCons] = useState('')
   const [verdict, setVerdict] = useState('')
 
+  // TipTap editor instance — StarterKit provides headings, lists, bold, etc.
   const editor = useEditor({
     extensions: [StarterKit],
     content: '<p>Start writing...</p>',
@@ -31,6 +37,10 @@ export default function WritePage() {
     },
   })
 
+  /**
+   * Saves post to Supabase. Creates slug from title + timestamp.
+   * For reviews, also inserts into reviews table linked by post_id.
+   */
   async function handleSave(status: 'draft' | 'published') {
     if (!title.trim() || !editor) return
     if (postType === 'review' && !gameName.trim()) {
@@ -44,6 +54,7 @@ export default function WritePage() {
 
     const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now()
 
+    // Insert main post row (content stored as TipTap JSON)
     const { data: post, error } = await supabase.from('posts').insert({
       author_id: user.id,
       title,
@@ -63,7 +74,7 @@ export default function WritePage() {
 
     // If review, save review details too
     if (postType === 'review') {
-      await supabase.from('reviews').insert({
+      const { error: reviewError } = await supabase.from('reviews').insert({
         post_id: post.id,
         game_name: gameName,
         score,
@@ -72,6 +83,11 @@ export default function WritePage() {
         cons: cons.split('\n').filter(Boolean),
         verdict,
       })
+      if (reviewError) {
+        alert('Review details error: ' + reviewError.message)
+        setSaving(false)
+        return
+      }
     }
 
     setSaving(false)
