@@ -64,7 +64,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-black text-white mb-4">
           Ready to <span className="text-green-400">Respawn?</span>
         </h2>
-        <p className="text-gray-400 mb-8">Join BotReSpawn and start writing today. It's free.</p>
+        <p className="text-gray-400 mb-8">Join BotReSpawn and start writing today. It&apos;s free.</p>
         <Link href="/login"
           className="bg-green-500 hover:bg-green-400 text-black font-bold px-8 py-3 rounded-lg transition text-sm">
           Get Started Free
