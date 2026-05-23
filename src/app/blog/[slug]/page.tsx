@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { tiptapJsonToHtml } from '@/lib/tiptap-html'
 import Comments from '@/components/Comments'
 import Reactions from '@/components/Reactions'
+import ShareButtons from '@/components/ShareButtons'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -126,13 +127,11 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       )}
 
-      {/* Reactions */}
-      <Reactions postId={post.id} />
 
       {/* Post content */}
       <div
         className="prose prose-invert max-w-none
-          prose-headings:font-black
+        prose-headings:font-black
           prose-a:text-green-400
           prose-img:rounded-xl
           prose-img:w-full
@@ -140,6 +139,13 @@ export default async function BlogPostPage({ params }: PageProps) {
           prose-blockquote:text-gray-400"
         dangerouslySetInnerHTML={{ __html: tiptapJsonToHtml(post.content) }}
       />
+
+      {/* Reactions */}
+      <Reactions postId={post.id} />
+
+      {/* Share buttons */}
+      <ShareButtons title={post.title} slug={post.slug} />
+
       {/* Comments */}
       <Comments postId={post.id} />
   
