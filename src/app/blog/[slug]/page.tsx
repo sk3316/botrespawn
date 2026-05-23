@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { tiptapJsonToHtml } from '@/lib/tiptap-html'
 import Comments from '@/components/Comments'
+import Reactions from '@/components/Reactions'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -124,6 +125,9 @@ export default async function BlogPostPage({ params }: PageProps) {
           )}
         </div>
       )}
+
+      {/* Reactions */}
+      <Reactions postId={post.id} />
 
       {/* Post content */}
       <div
