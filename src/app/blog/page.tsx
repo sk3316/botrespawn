@@ -65,9 +65,12 @@ export default async function BlogPage() {
                 <div className="w-6 h-6 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-xs text-green-400 font-bold">
                   {post.users?.username?.[0]?.toUpperCase() ?? "A"}
                 </div>
-                <span className="text-xs text-gray-500">
+                <Link
+                  href={`/profile/${post.users?.username}`}
+                  className="text-xs text-gray-500 hover:text-green-400 transition"
+                >
                   {post.users?.username ?? "Anonymous"}
-                </span>
+                </Link>
               </div>
             </Link>
           ))}
