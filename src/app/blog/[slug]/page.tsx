@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { tiptapJsonToHtml } from '@/lib/tiptap-html'
+import Comments from '@/components/Comments'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -135,6 +136,9 @@ export default async function BlogPostPage({ params }: PageProps) {
           prose-blockquote:text-gray-400"
         dangerouslySetInnerHTML={{ __html: tiptapJsonToHtml(post.content) }}
       />
+      {/* Comments */}
+      <Comments postId={post.id} />
+  
     </main>
   )
 }
