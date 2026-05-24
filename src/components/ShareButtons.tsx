@@ -10,6 +10,8 @@ export default function ShareButtons({ title, slug }: { title: string; slug: str
       await navigator.clipboard.writeText(url)
       alert('Link copied!')
     } catch (err) {
+      // Log error for debugging and satisfy linter that `err` is used
+      console.error(err)
       alert('Failed to copy link')
     }
   }

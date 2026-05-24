@@ -4,6 +4,7 @@ import { tiptapJsonToHtml } from '@/lib/tiptap-html'
 import Comments from '@/components/Comments'
 import Reactions from '@/components/Reactions'
 import ShareButtons from '@/components/ShareButtons'
+import AffiliateLinks from '@/components/AffiliateLinks'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -67,64 +68,69 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       {/* Review score card */}
       {review && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-10">
-          <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
-            <div>
-              <div className="text-xs text-gray-500 mb-1">GAME</div>
-              <div className="text-xl font-black text-white">🎮 {review.game_name}</div>
-              {review.platform?.[0] && (
-                <div className="text-xs text-gray-400 mt-1">Platform: {review.platform[0]}</div>
-              )}
+        <>
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-10">
+            <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
+              <div>
+                <div className="text-xs text-gray-500 mb-1">GAME</div>
+                <div className="text-xl font-black text-white">🎮 {review.game_name}</div>
+                {review.platform?.[0] && (
+                  <div className="text-xs text-gray-400 mt-1">Platform: {review.platform[0]}</div>
+                )}
+              </div>
+              <div className={`w-20 h-20 rounded-xl flex flex-col items-center justify-center font-black text-3xl border-2 ${
+                review.score >= 8
+                  ? 'bg-green-900/50 border-green-500 text-green-400'
+                  : review.score >= 6
+                  ? 'bg-yellow-900/50 border-yellow-500 text-yellow-400'
+                  : 'bg-red-900/50 border-red-500 text-red-400'
+              }`}>
+                {review.score}
+                <span className="text-xs font-normal opacity-60">/10</span>
+              </div>
             </div>
-            <div className={`w-20 h-20 rounded-xl flex flex-col items-center justify-center font-black text-3xl border-2 ${
-              review.score >= 8
-                ? 'bg-green-900/50 border-green-500 text-green-400'
-                : review.score >= 6
-                ? 'bg-yellow-900/50 border-yellow-500 text-yellow-400'
-                : 'bg-red-900/50 border-red-500 text-red-400'
-            }`}>
-              {review.score}
-              <span className="text-xs font-normal opacity-60">/10</span>
-            </div>
+
+            {/* Pros & Cons */}
+            {(review.pros?.length > 0 || review.cons?.length > 0) && (
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                {review.pros?.length > 0 && (
+                  <div>
+                    <div className="text-xs font-bold text-green-400 mb-2">✅ PROS</div>
+                    <ul className="flex flex-col gap-1">
+                      {review.pros.map((pro: string, i: number) => (
+                        <li key={i} className="text-sm text-gray-300 flex gap-2">
+                          <span className="text-green-500 shrink-0">+</span>{pro}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {review.cons?.length > 0 && (
+                  <div>
+                    <div className="text-xs font-bold text-red-400 mb-2">❌ CONS</div>
+                    <ul className="flex flex-col gap-1">
+                      {review.cons.map((con: string, i: number) => (
+                        <li key={i} className="text-sm text-gray-300 flex gap-2">
+                          <span className="text-red-500 shrink-0">−</span>{con}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {review.verdict && (
+              <div className="border-t border-gray-800 pt-4">
+                <div className="text-xs text-gray-500 mb-1">VERDICT</div>
+                <p className="text-white font-bold italic">&quot;{review.verdict}&quot;</p>
+              </div>
+            )}
           </div>
 
-          {/* Pros & Cons */}
-          {(review.pros?.length > 0 || review.cons?.length > 0) && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {review.pros?.length > 0 && (
-                <div>
-                  <div className="text-xs font-bold text-green-400 mb-2">✅ PROS</div>
-                  <ul className="flex flex-col gap-1">
-                    {review.pros.map((pro: string, i: number) => (
-                      <li key={i} className="text-sm text-gray-300 flex gap-2">
-                        <span className="text-green-500 shrink-0">+</span>{pro}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {review.cons?.length > 0 && (
-                <div>
-                  <div className="text-xs font-bold text-red-400 mb-2">❌ CONS</div>
-                  <ul className="flex flex-col gap-1">
-                    {review.cons.map((con: string, i: number) => (
-                      <li key={i} className="text-sm text-gray-300 flex gap-2">
-                        <span className="text-red-500 shrink-0">−</span>{con}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-
-          {review.verdict && (
-            <div className="border-t border-gray-800 pt-4">
-              <div className="text-xs text-gray-500 mb-1">VERDICT</div>
-              <p className="text-white font-bold italic">&quot;{review.verdict}&quot;</p>
-            </div>
-          )}
-        </div>
+          {/* Affiliate links */}
+          <AffiliateLinks gameName={review.game_name} />
+        </>
       )}
 
 
