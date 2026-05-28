@@ -5,6 +5,7 @@ import Comments from '@/components/Comments'
 import Reactions from '@/components/Reactions'
 import ShareButtons from '@/components/ShareButtons'
 import AffiliateLinks from '@/components/AffiliateLinks'
+import Link from 'next/link'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -30,15 +31,15 @@ export default async function BlogPostPage({ params }: PageProps) {
   const review = post.reviews?.[0]
 
   return (
-    <main className="max-w-2xl mx-auto px-6 py-12">
+    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
       {/* Post header */}
-      <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+      <div className="mb-8 sm:mb-10 animate-fade-in-up">
+        <div className="flex items-center gap-2 mb-4 flex-wrap">
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
             post.post_type === 'review'
-              ? 'bg-blue-900 text-blue-300'
-              : 'bg-purple-900 text-purple-300'
+              ? 'bg-blue-500/15 text-blue-300 border-blue-500/20'
+              : 'bg-purple-500/15 text-purple-300 border-purple-500/20'
           }`}>
             {post.post_type === 'review' ? '⭐ Review' : '📝 Blog'}
           </span>
@@ -49,18 +50,21 @@ export default async function BlogPostPage({ params }: PageProps) {
           </span>
         </div>
 
-        <h1 className="text-4xl font-black text-white mb-6 leading-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-white mb-6 leading-tight">
           {post.title}
         </h1>
 
-        <div className="flex items-center gap-3 pb-8 border-b border-gray-800">
+        <div className="flex items-center gap-3 pb-6 sm:pb-8 border-b border-gray-800/60">
           <div className="w-9 h-9 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-sm text-green-400 font-black">
             {post.users?.username?.[0]?.toUpperCase() ?? 'A'}
           </div>
           <div>
-            <div className="text-sm text-white font-bold">
+            <Link
+              href={`/profile/${post.users?.username}`}
+              className="text-sm text-white font-bold hover:text-green-400 transition-colors duration-200"
+            >
               {post.users?.username ?? 'Anonymous'}
-            </div>
+            </Link>
             <div className="text-xs text-gray-500">Author</div>
           </div>
         </div>
@@ -69,18 +73,18 @@ export default async function BlogPostPage({ params }: PageProps) {
       {/* Review score card */}
       {review && (
         <>
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-10">
-            <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
+          <div className="glass-card p-5 sm:p-6 mb-8 sm:mb-10 animate-fade-in-up stagger-1">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
               <div>
                 <div className="text-xs text-gray-500 mb-1">GAME</div>
-                <div className="text-xl font-black text-white">🎮 {review.game_name}</div>
+                <div className="text-lg sm:text-xl font-black text-white">🎮 {review.game_name}</div>
                 {review.platform?.[0] && (
                   <div className="text-xs text-gray-400 mt-1">Platform: {review.platform[0]}</div>
                 )}
               </div>
-              <div className={`w-20 h-20 rounded-xl flex flex-col items-center justify-center font-black text-3xl border-2 ${
+              <div className={`shrink-0 w-20 h-20 rounded-2xl flex flex-col items-center justify-center font-black text-3xl border-2 transition-all duration-300 ${
                 review.score >= 8
-                  ? 'bg-green-900/50 border-green-500 text-green-400'
+                  ? 'bg-green-900/50 border-green-500 text-green-400 score-high'
                   : review.score >= 6
                   ? 'bg-yellow-900/50 border-yellow-500 text-yellow-400'
                   : 'bg-red-900/50 border-red-500 text-red-400'
@@ -92,11 +96,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
             {/* Pros & Cons */}
             {(review.pros?.length > 0 || review.cons?.length > 0) && (
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 {review.pros?.length > 0 && (
-                  <div>
-                    <div className="text-xs font-bold text-green-400 mb-2">✅ PROS</div>
-                    <ul className="flex flex-col gap-1">
+                  <div className="bg-green-500/5 border border-green-500/10 rounded-xl p-4">
+                    <div className="text-xs font-bold text-green-400 mb-3">✅ PROS</div>
+                    <ul className="flex flex-col gap-1.5">
                       {review.pros.map((pro: string, i: number) => (
                         <li key={i} className="text-sm text-gray-300 flex gap-2">
                           <span className="text-green-500 shrink-0">+</span>{pro}
@@ -106,9 +110,9 @@ export default async function BlogPostPage({ params }: PageProps) {
                   </div>
                 )}
                 {review.cons?.length > 0 && (
-                  <div>
-                    <div className="text-xs font-bold text-red-400 mb-2">❌ CONS</div>
-                    <ul className="flex flex-col gap-1">
+                  <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-4">
+                    <div className="text-xs font-bold text-red-400 mb-3">❌ CONS</div>
+                    <ul className="flex flex-col gap-1.5">
                       {review.cons.map((con: string, i: number) => (
                         <li key={i} className="text-sm text-gray-300 flex gap-2">
                           <span className="text-red-500 shrink-0">−</span>{con}
@@ -121,7 +125,7 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
 
             {review.verdict && (
-              <div className="border-t border-gray-800 pt-4">
+              <div className="border-t border-gray-800/60 pt-4">
                 <div className="text-xs text-gray-500 mb-1">VERDICT</div>
                 <p className="text-white font-bold italic">&quot;{review.verdict}&quot;</p>
               </div>
@@ -142,7 +146,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           prose-img:rounded-xl
           prose-img:w-full
           prose-blockquote:border-green-500
-          prose-blockquote:text-gray-400"
+          prose-blockquote:text-gray-400
+          animate-fade-in-up stagger-2"
         dangerouslySetInnerHTML={{ __html: tiptapJsonToHtml(post.content) }}
       />
 

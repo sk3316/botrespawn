@@ -41,7 +41,7 @@ export default function WritePage() {
     content: '<p>Start writing...</p>',
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none min-h-[300px] focus:outline-none p-6',
+        class: 'prose prose-invert max-w-none min-h-[300px] focus:outline-none p-4 sm:p-6',
       },
     },
   })
@@ -147,13 +147,14 @@ export default function WritePage() {
   }
 
   return (
-    <main className="max-w-3xl mx-auto px-6 py-10">
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       {/* Top bar */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4 animate-fade-in-up">
         <select
+          id="post-type-select"
           value={postType}
           onChange={(e) => setPostType(e.target.value as 'blog' | 'review')}
-          className="bg-gray-900 text-white border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-green-500"
+          className="bg-gray-900/80 text-white border border-gray-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-green-500 transition-colors duration-200 w-full sm:w-auto"
         >
           <option value="blog">📝 Blog Post</option>
           <option value="review">⭐ Game Review</option>
@@ -161,11 +162,11 @@ export default function WritePage() {
 
         <div className="flex gap-3">
           <button onClick={() => handleSave('draft')} disabled={saving || !title.trim()}
-            className="bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-300 px-4 py-2 rounded-lg text-sm transition">
+            className="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-700 disabled:opacity-40 text-gray-300 px-4 py-2.5 rounded-xl text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
             Save Draft
           </button>
           <button onClick={() => handleSave('published')} disabled={saving || !title.trim()}
-            className="bg-green-500 hover:bg-green-400 disabled:opacity-40 text-black font-bold px-4 py-2 rounded-lg text-sm transition">
+            className="flex-1 sm:flex-none btn-glow bg-green-500 hover:bg-green-400 disabled:opacity-40 text-black font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-200">
             {saving ? 'Publishing...' : 'Publish ↗'}
           </button>
         </div>
@@ -173,65 +174,66 @@ export default function WritePage() {
 
       {/* Title */}
       <input
+        id="post-title"
         type="text"
         placeholder="Post title..."
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full text-4xl font-black bg-transparent text-white placeholder-gray-700 outline-none mb-6 border-b border-gray-800 pb-4"
+        className="w-full text-3xl sm:text-4xl font-black bg-transparent text-white placeholder-gray-700 outline-none mb-6 border-b border-gray-800/60 pb-4 focus:border-green-500/40 transition-colors duration-300 animate-fade-in-up stagger-1"
       />
 
       {/* Review fields */}
       {postType === 'review' && (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 flex flex-col gap-4">
+        <div className="glass-card p-5 sm:p-6 mb-6 flex flex-col gap-4 animate-fade-in-up stagger-2">
           <h3 className="text-white font-bold text-sm tracking-widest uppercase">⭐ Review Details</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Game Name *</label>
+              <label className="text-xs text-gray-500 mb-1.5 block">Game Name *</label>
               <input type="text" value={gameName} onChange={(e) => setGameName(e.target.value)}
                 placeholder="e.g. Elden Ring"
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+                className="w-full bg-gray-800/80 text-white border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 transition-colors duration-200" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Platform</label>
+              <label className="text-xs text-gray-500 mb-1.5 block">Platform</label>
               <input type="text" value={platform} onChange={(e) => setPlatform(e.target.value)}
                 placeholder="e.g. PC, PS5, Xbox"
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+                className="w-full bg-gray-800/80 text-white border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 transition-colors duration-200" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Score: <span className="text-green-400 font-bold">{score}/10</span></label>
+            <label className="text-xs text-gray-500 mb-1.5 block">Score: <span className="text-green-400 font-bold text-sm">{score}/10</span></label>
             <input type="range" min="0" max="10" step="0.5" value={score}
               onChange={(e) => setScore(parseFloat(e.target.value))}
-              className="w-full accent-green-500" />
+              className="w-full accent-green-500 h-2" />
             <div className="flex justify-between text-xs text-gray-600 mt-1">
               <span>0</span><span>5</span><span>10</span>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Pros (one per line)</label>
+              <label className="text-xs text-gray-500 mb-1.5 block">Pros (one per line)</label>
               <textarea value={pros} onChange={(e) => setPros(e.target.value)}
                 placeholder={"Great story\nSmooth gameplay"} rows={3}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none" />
+                className="w-full bg-gray-800/80 text-white border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 resize-none transition-colors duration-200" />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">Cons (one per line)</label>
+              <label className="text-xs text-gray-500 mb-1.5 block">Cons (one per line)</label>
               <textarea value={cons} onChange={(e) => setCons(e.target.value)}
                 placeholder={"Too long\nRepetitive missions"} rows={3}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500 resize-none" />
+                className="w-full bg-gray-800/80 text-white border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 resize-none transition-colors duration-200" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Verdict</label>
+            <label className="text-xs text-gray-500 mb-1.5 block">Verdict</label>
             <input type="text" value={verdict} onChange={(e) => setVerdict(e.target.value)}
               placeholder="e.g. A must-play for any RPG fan"
-              className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-500" />
+              className="w-full bg-gray-800/80 text-white border border-gray-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-green-500 transition-colors duration-200" />
           </div>
         </div>
       )}
 
       {/* Toolbar */}
-      <div className="flex gap-2 mb-3 flex-wrap">
+      <div className="flex gap-1.5 sm:gap-2 mb-3 flex-wrap animate-fade-in-up stagger-2">
         {[
           { label: 'B', action: () => editor?.chain().focus().toggleBold().run(), active: editor?.isActive('bold') },
           { label: 'I', action: () => editor?.chain().focus().toggleItalic().run(), active: editor?.isActive('italic') },
@@ -242,21 +244,23 @@ export default function WritePage() {
           { label: '" Quote', action: () => editor?.chain().focus().toggleBlockquote().run(), active: editor?.isActive('blockquote') },
         ].map((btn) => (
           <button key={btn.label} onClick={btn.action}
-            className={`px-3 py-1.5 rounded text-xs font-mono transition ${
-              btn.active ? 'bg-green-500 text-black font-bold' : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+            className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono transition-all duration-200 ${
+              btn.active
+                ? 'bg-green-500 text-black font-bold scale-105'
+                : 'bg-gray-800/80 text-gray-400 hover:text-white hover:bg-gray-700 hover:scale-105'
             }`}>
             {btn.label}
           </button>
         ))}
 
         {/* Divider */}
-        <div className="w-px bg-gray-700 mx-1" />
+        <div className="w-px bg-gray-700/50 mx-0.5 sm:mx-1 self-stretch" />
 
         {/* Image upload */}
         <button
           onClick={() => imageInputRef.current?.click()}
           disabled={uploading}
-          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+          className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono bg-gray-800/80 text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200 disabled:opacity-40 hover:scale-105"
         >
           {uploading ? '⏳' : '🖼️ Image'}
         </button>
@@ -266,7 +270,7 @@ export default function WritePage() {
         <button
           onClick={() => videoInputRef.current?.click()}
           disabled={uploading}
-          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+          className="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono bg-gray-800/80 text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200 disabled:opacity-40 hover:scale-105"
         >
           {uploading ? '⏳' : '🎬 Video'}
         </button>
@@ -274,29 +278,29 @@ export default function WritePage() {
       </div>
 
       {/* YouTube/Twitch embed */}
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-3 animate-fade-in-up stagger-3">
         <input
           type="text"
-          placeholder="Paste YouTube or Twitch URL to embed..."
+          placeholder="Paste YouTube URL to embed..."
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
-          className="flex-1 bg-gray-900 text-white border border-gray-700 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-green-500"
+          className="flex-1 bg-gray-900/80 text-white border border-gray-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-green-500 transition-colors duration-200"
         />
         <button
           onClick={handleVideoEmbed}
           disabled={!videoUrl.trim()}
-          className="px-3 py-1.5 rounded text-xs font-mono bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700 transition disabled:opacity-40"
+          className="px-3 py-2 rounded-xl text-xs font-mono bg-gray-800/80 text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200 disabled:opacity-40"
         >
           Embed ↗
         </button>
       </div>
 
       {/* Editor */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl min-h-[300px] focus-within:border-green-500/50 transition">
+      <div className="glass-card min-h-[300px] focus-within:border-green-500/40 transition-all duration-300 animate-fade-in-up stagger-3">
         <EditorContent editor={editor} />
       </div>
 
-      <p className="text-gray-600 text-xs mt-4">
+      <p className="text-gray-600 text-xs mt-4 animate-fade-in stagger-4">
         💡 Tip: You need a title before you can save or publish.
       </p>
     </main>

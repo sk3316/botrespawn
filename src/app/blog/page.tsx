@@ -23,24 +23,24 @@ export default async function BlogPage() {
     .order("published_at", { ascending: false });
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
-      <div className="mb-10">
-        <h1 className="text-4xl font-black text-white mb-2">Blog</h1>
-        <p className="text-gray-400">
+    <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <div className="mb-8 sm:mb-10 animate-fade-in-up">
+        <h1 className="text-3xl sm:text-4xl font-black text-white mb-2">Blog</h1>
+        <p className="text-gray-400 text-sm sm:text-base">
           Latest posts from the BotReSpawn community
         </p>
       </div>
 
       {posts && posts.length > 0 ? (
-        <div className="flex flex-col gap-6">
-          {posts.map((post) => (
+        <div className="flex flex-col gap-4 sm:gap-6">
+          {posts.map((post, i) => (
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-green-500/40 transition group"
+              className={`glass-card card-hover p-5 sm:p-6 group animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs bg-purple-900 text-purple-300 font-bold px-2 py-1 rounded-full">
+                <span className="text-xs bg-purple-500/15 text-purple-300 font-bold px-2.5 py-1 rounded-full border border-purple-500/20">
                   📝 Blog
                 </span>
                 <span className="text-xs text-gray-500">
@@ -52,7 +52,7 @@ export default async function BlogPage() {
                 </span>
               </div>
 
-              <h2 className="text-xl font-black text-white mb-2 group-hover:text-green-400 transition">
+              <h2 className="text-lg sm:text-xl font-black text-white mb-2 group-hover:text-green-400 transition-colors duration-300">
                 {post.title}
               </h2>
 
@@ -66,26 +66,23 @@ export default async function BlogPage() {
                 <div className="w-6 h-6 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-xs text-green-400 font-bold">
                   {post.users?.username?.[0]?.toUpperCase() ?? "A"}
                 </div>
-                <Link
-                  href={`/profile/${post.users?.username}`}
-                  className="text-xs text-gray-500 hover:text-green-400 transition"
-                >
+                <span className="text-xs text-gray-500 hover:text-green-400 transition-colors duration-200">
                   {post.users?.username ?? "Anonymous"}
-                </Link>
+                </span>
               </div>
             </Link>
           ))}
         </div>
       ) : (
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-16 text-center">
-          <div className="text-4xl mb-4">📝</div>
+        <div className="glass-card p-12 sm:p-16 text-center animate-fade-in-up">
+          <div className="text-4xl sm:text-5xl mb-4 animate-float">📝</div>
           <h2 className="text-white font-bold text-xl mb-2">No posts yet</h2>
           <p className="text-gray-400 text-sm mb-6">
             Be the first to write on BotReSpawn!
           </p>
           <Link
             href="/write"
-            className="bg-green-500 hover:bg-green-400 text-black font-bold px-6 py-2.5 rounded-lg transition text-sm"
+            className="btn-glow bg-green-500 hover:bg-green-400 text-black font-bold px-6 py-2.5 rounded-xl transition-all duration-300 text-sm inline-block"
           >
             Write a Post
           </Link>

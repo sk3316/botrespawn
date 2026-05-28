@@ -6,9 +6,10 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { useMemo } from 'react'
 
 export default function LoginPage() {
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
 
   /** Starts Google OAuth; user returns to /auth/callback with a code */
   async function signInWithGoogle() {
@@ -21,35 +22,49 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <main className="min-h-[calc(100vh-53px)] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-green-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-green-500/3 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-sm relative z-10 animate-fade-in-up">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-white mb-2">
-            BOT<span className="text-green-400">RE</span>SPAWN
+          <h1 className="text-3xl sm:text-4xl font-black mb-3">
+            <span className="text-green-400">BOT</span>
+            <span className="text-white">RE</span>
+            <span className="text-green-400">SPAWN</span>
           </h1>
           <p className="text-gray-400 text-sm">
             Sign in to write, review, and connect
           </p>
         </div>
 
-        <div className="bg-gray-900 border border-gray-800 rounded-xl p-8">
+        {/* Login card */}
+        <div className="glass-card p-8 animate-fade-in-up stagger-1">
           <h2 className="text-white font-bold text-lg mb-6 text-center">
             Welcome back 👾
           </h2>
 
           <button
+            id="google-sign-in"
             onClick={signInWithGoogle}
-            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-100 text-gray-900 font-semibold py-3 rounded-lg transition"
+            className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 font-semibold py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-white/10 hover:scale-[1.02] active:scale-[0.98]"
           >
             <GoogleIcon />
             Continue with Google
           </button>
 
-          <p className="text-gray-600 text-xs text-center mt-6">
+          <p className="text-gray-600 text-xs text-center mt-6 leading-relaxed">
             By signing in you agree to our terms. <br />
             No spam. Ever.
           </p>
         </div>
+
+        {/* Extra decoration */}
+        <p className="text-center text-gray-600 text-xs mt-6 animate-fade-in-up stagger-3">
+          🎮 Join thousands of gamers creating content
+        </p>
       </div>
     </main>
   )

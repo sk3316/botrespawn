@@ -16,6 +16,7 @@ export default function Reactions({ postId }: { postId: string }) {
   const [reactions, setReactions] = useState<ReactionCount[]>([])
   const [user, setUser] = useState<{ id: string } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [bouncing, setBouncing] = useState<Record<string, boolean>>({})
 
   const fetchReactions = useCallback(async () => {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
@@ -45,6 +46,13 @@ export default function Reactions({ postId }: { postId: string }) {
       window.location.assign('/login')
       return
     }
+
+    // Trigger bounce animation
+    setBouncing((prev) => ({ ...prev, [emoji]: true }))
+    setTimeout(() => {
+      setBouncing((prev) => ({ ...prev, [emoji]: false }))
+    }, 400)
+
     setLoading(true)
 
     const existing = reactions.find((r) => r.emoji === emoji)
@@ -69,20 +77,20 @@ export default function Reactions({ postId }: { postId: string }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2 my-8">
+    <div className="flex flex-wrap items-center gap-2.5 my-8">
       {reactions.map(({ emoji, count, reacted }) => (
         <button
           key={emoji}
           onClick={() => handleReaction(emoji)}
           disabled={loading}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold transition border ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 border ${
             reacted
-              ? 'bg-green-500/20 border-green-500 text-green-400'
-              : 'bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white'
+              ? 'bg-green-500/10 border-green-500/40 text-green-400 shadow-sm shadow-green-500/5'
+              : 'bg-gray-900/60 border-gray-800/80 text-gray-400 hover:border-gray-700 hover:text-white hover:bg-gray-900'
           }`}
         >
-          <span>{emoji}</span>
-          {count > 0 && <span>{count}</span>}
+          <span className={`inline-block ${bouncing[emoji] ? 'emoji-bounce' : ''}`}>{emoji}</span>
+          {count > 0 && <span className="text-xs">{count}</span>}
         </button>
       ))}
     </div>
