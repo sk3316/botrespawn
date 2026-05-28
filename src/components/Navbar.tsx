@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useMemo, useState } from 'react'
 import { User } from '@supabase/supabase-js'
+import Notifications from './Notifications'
 
 export default function Navbar() {
   // Single client instance per mount (avoids useEffect dependency warnings)
@@ -81,6 +82,7 @@ export default function Navbar() {
 
           {user ? (
             <div className="flex items-center gap-4">
+              <Notifications userId={user.id} />
               <Link
                 href="/dashboard"
                 className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
